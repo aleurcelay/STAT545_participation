@@ -16,6 +16,11 @@ Change the file output to both html and md _documents_ (not notebook).
 ```{r}
 library(gapminder)
 library(tidyverse)
+<<<<<<< HEAD
+=======
+suppressPackageStartupMessages(tidyverse)
+
+>>>>>>> 5f11ed42e786d52cb5a09cca11bb00af423f64d3
 ```
 
 2. `knit` the document. 
