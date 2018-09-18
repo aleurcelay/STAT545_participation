@@ -13,15 +13,35 @@ Change the file output to both html and md _documents_ (not notebook).
 
 1. Load the `gapminder` and `tidyverse` packages. Hint: `suppressPackageStartupMessages()`!
     - This loads `dplyr`, too.
+```{r}
+library(gapminder)
+library(tidyverse)
+suppressPackageStartupMessages(tidyverse)
+
+```
+
 2. `knit` the document. 
 
 ## `select()`
 
 1. Make a data frame containing the columns `year`, `lifeExp`, `country` from the gapminder data, in that order.
+```{r}
+select(gapminder,year,lifeExp,country)
+```
+
 
 2. Select all variables, from `country` to `lifeExp`. 
 
+```{r}
+select(gapminder, country:lifeExp)
+```
+
+
 3. Select all variables, except `lifeExp`.
+```{r}
+select(gapminder, -lifeExp)
+```
+
 
 4. Put `continent` first. Hint: use the `everything()` function.
 
