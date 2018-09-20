@@ -49,10 +49,6 @@ ggplot(gapminder, aes(x=lifeExp, y=gdpPercap)) +
 Notice the "metaprogramming" again!
 
 4. You _must_ remember to put the aesthetic mappings in the `aes` function! What happens if you forget?
-```{r}
-ggplot(gapminder, (x=lifeExp, y=gdpPercap) +
-  geom_point()
-```
 
 
 
@@ -102,10 +98,19 @@ Let's build a histogram of life expectancy.
 
 2. Build the histogram of life expectancy.
 
+```{r}
+ggplot(gapminder, aes(lifeExp)) +
+  geom_histogram()
+```
+
 
 
 3. Change the number of bins to 50.
 
+```{r}
+ggplot(gapminder, aes(lifeExp)) +
+  geom_histogram(bins=50)
+```
 
 
 4. Instead of a histogram, let's create a kernel density plot.
