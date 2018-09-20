@@ -94,6 +94,12 @@ gapminder%>%
 
 
 2. Of those, only take data from Asia.
+```{r}
+gapminder%>%
+  filter(pop>1000000) %>%
+  filter(continent == "Asia")
+```
+
 
 ## git stuff (Optional)
 
