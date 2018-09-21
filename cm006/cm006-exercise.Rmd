@@ -1,7 +1,8 @@
 ---
 title: 'cm006 Exercises: Exploring Geometric Objects'
 output:
-  github_document:
+  html_document:
+    keep_md: yes
     df_print: paged
 editor_options:
   chunk_output_type: inline
