@@ -1,7 +1,6 @@
 ---
 title: "cm007 Exercises: Exploring Aesthetic Mappings"
-output: html_notebook:
-  keep_md: yes
+output: github_document
 editor_options: 
   chunk_output_type: inline
 ---
@@ -11,13 +10,32 @@ editor_options:
 # Beyond the x and y aesthetics
 
 Switch focus to exploring aesthetic mappings, instead of geoms. 
+```{r}
+library(tidyverse)
+library(gapminder)
+```
+
 
 ## Shapes
 
 - Try a scatterplot of `gdpPercap` vs `pop` with a categorical variable (continent) as `shape`.
+
+```{r}
+gvsl <- ggplot(gapminder, aes(gdpPercap, lifeExp)) +
+  scale_x_log10()
+gvsl + geom_point(aes(shape=continent), alpha=0.2)
+```
+
 - As with all (?) aesthetics, we can also have them _not_ as aesthetics!
     - Try some shapes: first as integer from 0-24, then as keyboard characters.
     - What's up with `pch`?
+    
+```{r}
+gvsl + geom_point(shape = 7)
+gvsl + geom_point(pch = 7)
+gvsl + geom_point(shape = "$")
+```
+    
 
 List of shapes can be found [at the bottom of the `scale_shape` documentation](https://ggplot2.tidyverse.org/reference/scale_shape.html).
 
@@ -26,9 +44,18 @@ List of shapes can be found [at the bottom of the `scale_shape` documentation](h
 Make a scatterplot. Then:
 
 - Try colour as categorical variable.
+
+```{r}
+gvsl + geom_point(aes(colour = continent))
+```
+
 - Try `colour` and `color`. 
 - Try colour as numeric variable.
     - Try `trans="log10"` for log scale.
+```{r}
+gvsl + geom_point(aes(color = pop)) + scale_colour_continuous(trans = "log10")
+gvsl + geom_point(aes(color = lifeExp > 60))
+```
 
 
 Make a line plot of `gdpPercap` over time for all countries. Colour by `lifeExp > 60` (remember that `lifeExp` looks bimodal?)
@@ -36,17 +63,49 @@ Make a line plot of `gdpPercap` over time for all countries. Colour by `lifeExp 
 
 Try adding colour to a histogram. How is this different?
 
+```{r}
+ggplot(gapminder, aes(lifeExp)) +
+  geom_histogram(aes(fill = continent))
+```
+Overplotting. Too much info in one plot.
+
 ## Facetting
 
-Make histograms of `gdpPercap` for each continent. Try the `scales` and `ncol` arguments. 
+Make histograms of `gdpPercap` for each continent. Try the `scales` and `ncol` arguments.
+
+```{r}
+ggplot(gapminder, aes(lifeExp)) +
+  facet_wrap( ~ continent) + #scales= "free x"
+  geom_histogram()
+```
+
 
 Remove Oceania. Add another variable: `lifeExp > 60`. 
+
+```{r}
+ggplot(gapminder, aes(gdpPercap)) +
+  facet_grid(continent ~ lifeExp > 60) +
+  geom_histogram()
+```
+
 
 ## Bubble Plots
 
 - Add a `size` aesthetic to a scatterplot. What about `cex`?
+
+```{r}
+gvsl + geom_point(aes(size = pop), alpha = 0.2) +
+  scale_size_area()
+```
+
 - Try adding `scale_radius()` and `scale_size_area()`. What's better?
 - Use `shape=21` to distinguish between `fill` (interior) and `colour` (exterior).
+
+```{r}
+gvsl + geom_point(aes(size = pop, fill=continent),
+                  shape=21, color="black", alpha=0.2)
+```
+
 
 ## "Complete" plot
 
@@ -56,6 +115,11 @@ Let's try plotting much of the data.
 - facet by year
 - colour by continent
 
+```{r}
+gvsl + geom_point(aes(size = pop, color = continent)) +
+  scale_size_area() +
+  facet_wrap(~ year)
+```
 
 
 # Continue from last time (geom exploration with `x` and `y` aesthetics)
