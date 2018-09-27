@@ -216,15 +216,21 @@ gapminder%>%
 2. Compute the relative gdp (NOT per capita!) of each country compared to Canada (= GDP of a country / GDP of Canada).
 
 ```{r}
-cda <- gapminder %>%
-  mutate(gdp =gdpPercap *pop) %>%
-  filter(country == "Canada") %>%
-  `[[`("gdp")
+cda <- gapminder %>% 
+    mutate(gdp = gdpPercap * pop) %>% 
+    filter(country == "Canada") %>% 
+    `[[`("gdp")
 
-gapminder %>%
-  mutate(cda_gdp = rep(cda, nlevels(country)),
-         gdp = gdpPercap * pop,
-         rel_gdp = gdp/cda_gdp)
+my_df <- gapminder %>% 
+    mutate(cda_gdp = rep(cda, nlevels(country)),
+           gdp = gdpPercap * pop,
+           rel_gdp = gdp/cda_gdp)
+
+#check
+my_df %>% filter(country == "Canada") %>% 
+    select(country, continent, year, rel_gdp)
+summary(my_df$rel_gdp)
+
 ```
 
 Sanity check: are Canada's numbers = 1? What is the spread of numbers like (should be small)?
