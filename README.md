@@ -1,6 +1,5 @@
 # STAT545_participation
 
-This repo is part of a STAT 545 exercise to explore GitHub and markdown.
+This repo contains all my in-class exercises from the STAT 545 course.
 
-This line was added locally.
-This too.
+Exercises are divided by class numbers.
