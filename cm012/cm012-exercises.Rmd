@@ -47,12 +47,15 @@ str(lotr2)
 Examples of problems encountered with factors. (ideas came from [R Bloggers](https://www.r-bloggers.com/factors-are-not-first-class-citizens-in-r/))
 
 ```{r}
+head(iris)
 iris %>% 
-  mutate(Species = ifelse(Species == "versicolor", "vers", Species))
+  mutate(Species = ifelse(Species == "versicolor", "vers", Species)) %>%
+  str()
 ```
 
 ```{r}
 c(iris$Species, "setosa")
+as.character(iris$Species)
 ```
 
 
@@ -65,14 +68,18 @@ c(iris$Species, "setosa")
 Here is a sample of 10 letters drawn from the possibilities "a", "b", and "c":
 
 ```{r}
-set.seed(10)
-(draw <- sample(letters[1:3], size = 10, replace = TRUE))
+set.seed(10) #"random" results will be the same everytime
+(draw <- sample(letters[1:3], size = 10, replace = TRUE)) #sample allows to take a random sample
 ```
 
 Convert `draw` to a factor. What are the levels? How many are there? How many of each category was drawn?
 
 ```{r}
-
+draw <- factor(draw)
+draw
+levels(draw)
+nlevels(draw)
+fct_count(draw)
 ```
 
 
@@ -82,6 +89,7 @@ We saw that `c()` doesn't work for concatenating. Modify the following code to u
 
 ```{r}
 c(lotr1$Film, lotr2$Film)
+fct_c(lotr1$Film, lotr2$Film)
 ```
 
 Try binding by row `lotr1` and `lotr2`:
@@ -92,7 +100,9 @@ Try binding by row `lotr1` and `lotr2`:
 Which one is more lenient? Which would you prefer?
 
 ```{r}
-
+rbind(lotr1, lotr2) %>% str()
+bind_rows(lotr1,lotr2) %>% str()
+as.character(5)
 ```
 
 
@@ -101,8 +111,11 @@ Which one is more lenient? Which would you prefer?
 Levels don't always have to be present ("observed") in the factor. Example of what this means:
 
 ```{r}
-gap_gs <- gapminder %>% filter(country %in% c("Germany", "Sweden"))
+gap_gs <- gapminder %>% 
+  filter(country %in% c("Germany", "Sweden"))
 nlevels(gap_gs$country)
+levels(gap_gs$country)
+as.character(gap_gs$country)
 ```
 
 
@@ -120,6 +133,10 @@ gap_small <- gapminder %>%
 Exercise: Make a bar chart of the number of times a continent has a country with population < 250,000 in the `gapminder` data set. Try with and without `scale_x_discrete(drop=FALSE)`.
 
 ```{r}
+gap_small %>%
+  ggplot() +
+  geom_bar(aes(continent, fill=continent)) +
+  scale_x_discrete(drop=FALSE)
 
 ```
 
@@ -137,7 +154,12 @@ Exercise: get rid of the unused factor levels for country and continent in diffe
 - Re-defining the variable as a factor
 
 ```{r}
-
+gap_small %>%
+  droplevels() %>%
+  str()
+gap_small %>%
+  mutate(continent = fct_drop(continent)) %>%
+  str()
 ```
 
 
@@ -152,7 +174,7 @@ levels(cont)
 
 Plotting happens in the order of the factor levels:
 
-```{r, fig.width=2, fig.height=1}
+```{r, fig.width=4, fig.height=1.5}
 qplot(cont)
 ```
 
@@ -165,13 +187,19 @@ Reorder by frequency:
 - Rearrange by frequency: `fct_infreq()`.
 - Reverse: `fct_rev()` 
 
-```{r, fig.width=2, fig.height=1}
+```{r, fig.width=4, fig.height=1.5}
 cont %>% 
   fct_infreq() %>% 
+  fct_rev %>% #reverse the order of factors
   qplot()
 ```
 
 Could also arrange by the order they appear in the factor with `fct_inorder()`.
+
+```{r}
+draw %>% fct_inorder()
+```
+
 
 ### Ordering by Another Variable
 
@@ -185,8 +213,11 @@ ggplot(gap_asia_2007, aes(lifeExp, country)) + geom_point()
 
 Let's use `fct_reorder()` to reorder the countries of `gap_asia_2007` by life Expectancy, and produce the same plot:
 
-```{r, fig.width=2, fig.height=1}
-
+```{r, fig.width=4, fig.height=2}
+gap_asia_2007 %>%
+  mutate(country = fct_reorder(country, lifeExp)) %>%
+  ggplot(aes(lifeExp, country)) + 
+    geom_point()
 ```
 
 What about when life Expectancy is not unique? Example: life expectancy of each continent:
@@ -203,7 +234,10 @@ ggplot(gapminder, aes(continent, lifeExp)) +
 Exercise: Try making the above box plot and violin plots, ordered by median lifeExp. Try other functions to order by by modifying the `.fun` argument.
 
 ```{r, fig.width=2, fig.height=1}
-
+gapminder %>%
+  mutate(continent = fct_reorder(continent, lifeExp)) %>%
+  ggplot(aes(continent, lifeExp, fill = continent)) +
+  geom_boxplot()
 ```
 
 
@@ -225,8 +259,11 @@ Use `fct_reorder2(f, x, y)` to reorder factor `f`:
 
 Exercise: Reorder the above line graph so that the legend is in order of last life expectancy. Useful for black-and-white printing!
 
-```{r, fig.width=2, fig.height=1}
-
+```{r, fig.width=4, fig.height=2}
+gap_select %>%
+  mutate(country = fct_reorder2(country, year, lifeExp)) %>%
+  ggplot(aes(year, lifeExp)) +
+  geom_line(aes(group=country, colour=country))
 ```
 
 ### Ordering "because I said so"
@@ -240,7 +277,7 @@ Here's how to use `fct_relevel()` to do that. Exercise: modify the code so that:
 
 ```{r}
 gap_asia_2007$country %>% 
-  fct_relevel("Syria") %>% 
+  fct_relevel("Syria", "Sweden", after=2) %>% #if I wanted it in the third place
   levels() %>% 
   head()
 ```
@@ -256,7 +293,7 @@ gap_big_north <- gapminder %>%
   filter(country %in% c("Canada", "United States", "Mexico")) %>% 
   droplevels()
 gap_big_north$country %>% 
-  fct_recode("USA" = "United States") %>% 
+  fct_recode("USA" = "United States") %>% #change variable name
   levels()
 ```
 
@@ -285,7 +322,9 @@ More practically, we can lump the least frequent levels together as "Other". Mod
 - Note: you can manually specify non-other levels using `fct_other()`.
 
 ```{r, fig.width=2, fig.height=1}
-
+cont %>% 
+  fct_lump(n=2) %>%  #keep the two top levels and lump everything else in one
+  qplot()
 ```
 
 We can use the `w` argument to lump by another variable.
@@ -343,7 +382,8 @@ Goal here: some exposure to `lubridate`; know it exists.
 1. Use different combinations of y, m, d to make a date time object.
 
 ```{r}
-
+lubridate::ymd(170511)
+lubridate::ymd("2017-May-11")
 ```
 
 2. Get `year`, `month`, `yday`, `wday`, `day`.
