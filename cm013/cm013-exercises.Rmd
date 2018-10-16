@@ -1,8 +1,10 @@
 ---
 title: "cm013 Exercise"
 output: github_document
+always_allow_html: yes
 editor_options: 
   chunk_output_type: inline
+  
 ---
 
 ```{r}
@@ -161,7 +163,7 @@ Consider the following plot:
 1. Convert it to a `plotly` object by applying the `ggplotly()` function:
 
 ```{r}
-install.packages("plotly")
+#install.packages("plotly")
 library(plotly)
 ggplotly(p)
 ```
@@ -170,9 +172,9 @@ ggplotly(p)
     - NOTE: plotly graphs don't seem to show up in Rmd _notebooks_, but they do with Rmd _documents_.
 
 ```{r}
-p %>% 
-    ggplotly() %>% 
-    htmlwidgets::saveWidget("LOCATION_GOES_HERE")
+#p %>% 
+ #   ggplotly() %>% 
+  #  htmlwidgets::saveWidget("LOCATION_GOES_HERE")
 ```
 
 
