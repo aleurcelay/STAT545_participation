@@ -22,6 +22,7 @@ This means reading webpages like [this wikipedia page](https://en.wikipedia.org/
 2. Load it:
 
 ```{r}
+install.packages("rvest")
 library(tidyverse)
 library(rvest)
 ```
@@ -51,7 +52,7 @@ We'll use `rvest` to read in parts of `cm111-simple_script.html` into R.
 1. Apply `read_html()` to the file: reads in the page, outputs a special R object.
 
 ```{r}
-simple_page <- FILL_THIS_IN
+(simple_page <- read_html("cm111-simple_script.html"))
 ```
 
 2. Pipe the output into `html_structure()`: will print the html to screen.
@@ -63,7 +64,7 @@ simple_page %>% html_structure()
 3. Apply `html_text()` to `simple_page`: gives me all the text (not the tags).
 
 ```{r}
-
+simple_page %>% html_text() #%>% cat()
 ```
 
 4. `html_nodes()`: selects only relevant parts of the html, constructing a (special) list of all relevant pieces. 
@@ -74,11 +75,13 @@ simple_page %>% html_structure()
 
 ```{r}
 simple_page %>% 
-	html_nodes(FILL_THIS_IN)
+	html_nodes("p") %>%
+  html_text() #get ride of other nested tags
 simple_page %>% 
-	html_nodes(FILL_THIS_IN)
+	html_nodes("a") %>%
+  html_text()
 simple_page %>% 
-	html_nodes(FILL_THIS_IN)
+	html_nodes("#wiki")
 ```
 
 
@@ -94,16 +97,16 @@ Return the text in `simple_page` contained within:
 
 ```{r}
 simple_page %>% 
-	html_nodes(FILL_THIS_IN) %>% 
-	FILL_THIS_IN
+	html_nodes("p a") %>% 
+	html_text()
 ```
 
 2. any tag.
 
 ```{r}
 simple_page %>% 
-	html_nodes(FILL_THIS_IN) %>% 
-	FILL_THIS_IN
+	html_nodes("*") %>% 
+	html_text
 ```
 
 
@@ -115,14 +118,16 @@ We can extract other things besides the text between the tags:
 
 ```{r}
 simple_page %>% 
-	html_nodes("*")
+	html_nodes("*") %>%
+  html_name()
 ```
 
 - `html_attrs()` gives all attributes of the tags. Try it with `html_nodes("a")`:
 
 ```{r}
 simple_page %>% 
-	html_nodes("a")
+	html_nodes("a") %>%
+  html_attrs() #attr for a specific attribute
 ```
 
 - `html_attr()` (not plural) extracts a vector of the attribute contents by the `name` argument. Try `name="href"` with `html_nodes("a")`:
@@ -152,7 +157,9 @@ Viewing the source to find the CSS is horrendous. In comes [`SelectorGadget`](ht
 2. Put the CSS selection in the `html_nodes()`.
 
 ```{r}
-
+read_html("https://www.musixmatch.com/search/kane%20brown") %>%
+  html_nodes(".track-card .media-card-title") %>%
+  html_text()
 ```
 
 ## Reading a table
@@ -161,7 +168,8 @@ Goal: extract the Wikipedia table of the [tallest steel roller coasters](https:/
 
 ```{r}
 read_html("https://en.wikipedia.org/wiki/List_of_roller_coaster_rankings") %>% 
-	FILL_THIS_IN
+	html_table(fill=TRUE) %>% 
+  .[[2]]
 ```
 
 
@@ -172,6 +180,7 @@ We've already seen `readr`, but what about importing other data types?
 - JSON, with the `jsonlite` package. Examples from the `fromJSON()` documentation:
 
 ```{r}
+library(jsonlite)
 fromJSON('{"city" : "Z\\u00FCrich"}') # A list
 fromJSON("https://api.github.com/users/hadley/orgs") %>% 
 	glimpse() # A data frame
